@@ -8,12 +8,13 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => const MyHomePage(title: 'Dynamic App Icons'));
+            builder: (_) => const MyHomePage(title: 'Ícone do aplicativo'));
       default:
         return _errorRoute();
     }
   }
 
+//platform.is(ios)
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(

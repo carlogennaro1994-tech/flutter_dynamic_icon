@@ -1,9 +1,11 @@
+import 'package:dynamic_icon_flutter/dynamic_icon_flutter.dart';
+
 import '../../../Components/spacer.dart';
 import '../../../Declarations/Images/image_files.dart';
 import '../../../Declarations/constants.dart';
 import '../../../Components/app_bar.dart';
 import '../../../Components/primary_btn.dart';
-
+import 'dart:io' show Platform;
 import 'package:flutter_dynamic_icon/flutter_dynamic_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +21,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int iconIndex = 0;
 
-  List iconName = <String>['icon1', 'icon2', 'icon3'];
+  final List<String> iconName = <String>['icon1', 'icon2', 'icon3'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildIconTile(0, 'red'),
-              buildIconTile(1, 'dark'),
-              buildIconTile(2, 'blue'),
+              buildIconTile(0, 'Claro'),
+              buildIconTile(1, 'Escuro'),
+              buildIconTile(2, 'Exclusivo'),
               HeightSpacer(myHeight: kSpacing),
-              PrimaryBtn(
-                  btnFun: () => changeAppIcon(), btnText: 'Set as app icon'),
+              PrimaryBtn(btnFun: changeAppIcon, btnText: 'Escolher como ícone'),
             ],
           )),
     );
@@ -55,27 +57,35 @@ class _MyHomePageState extends State<MyHomePage> {
               trailing: iconIndex == index
                   ? const Icon(
                       Icons.check_circle_rounded,
-                      color: Colors.green,
+                      color: Color(0xFF6131B4),
                       size: 30,
                     )
                   : Icon(
                       Icons.circle_outlined,
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.grey[500],
                       size: 30,
                     )),
         ),
       );
 
   changeAppIcon() async {
-    try {
-      if (await FlutterDynamicIcon.supportsAlternateIcons) {
-        await FlutterDynamicIcon.setAlternateIconName(iconName[iconIndex]);
-        debugPrint("App icon change successful");
-        return;
+    if (Platform.isAndroid) {
+      // Android-specific code
+      const List<String> list = ["icon1", "icon2", "icon3", "MainActivity"];
+      DynamicIconFlutter.setIcon(
+          icon: list[iconIndex], listAvailableIcon: iconName);
+    } else if (Platform.isIOS) {
+      // iOS-specific code
+      try {
+        if (await FlutterDynamicIcon.supportsAlternateIcons) {
+          await FlutterDynamicIcon.setAlternateIconName(iconName[iconIndex]);
+          debugPrint("App icon change successful");
+          return;
+        }
+      } catch (e) {
+        debugPrint("Exception: ${e.toString()}");
       }
-    } catch (e) {
-      debugPrint("Exception: ${e.toString()}");
+      debugPrint("Failed to change app icon ");
     }
-    debugPrint("Failed to change app icon ");
   }
 }
