@@ -1,5 +1,5 @@
-import 'package:dynamic_icon_flutter/dynamic_icon_flutter.dart';
-
+import 'package:flutter_dynamic_icons/flutter_dynamic_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Components/spacer.dart';
 import '../../../Declarations/Images/image_files.dart';
 import '../../../Declarations/constants.dart';
@@ -19,9 +19,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int iconIndex = 0;
-
-  final List<String> iconName = <String>['icon1', 'icon2', 'icon3'];
+  late int iconIndex;
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((value) {
+      setState(() {
+        iconIndex = value.getInt('savedIconIndex') ?? 0;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildIconTile(0, 'Claro'),
-              buildIconTile(1, 'Escuro'),
-              buildIconTile(2, 'Exclusivo'),
+              buildIconTile(0, 'Light'),
+              buildIconTile(1, 'Dark'),
+              buildIconTile(2, 'Exclusive'),
               HeightSpacer(myHeight: kSpacing),
-              PrimaryBtn(btnFun: changeAppIcon, btnText: 'Escolher como ícone'),
+              PrimaryBtn(btnFun: changeAppIcon, btnText: 'Choose as app Icon'),
             ],
           )),
     );
@@ -69,14 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
   changeAppIcon() async {
+    SharedPreferences.getInstance().then((value) {
+      value.setInt('savedIconIndex', iconIndex);
+    });
     if (Platform.isAndroid) {
       // Android-specific code
-      const List<String> list = ["icon1", "icon2", "icon3", "MainActivity"];
-      DynamicIconFlutter.setIcon(
-          icon: list[iconIndex], listAvailableIcon: iconName);
+      final _flutterDynamicIconsPlugin = FlutterDynamicIcons();
+      final List<String> androidIconNames = <String>[
+        'icon1',
+        'icon2',
+        'icon3',
+        "MainActivity"
+      ];
+      _flutterDynamicIconsPlugin.setIcon(
+          icon: androidIconNames[iconIndex],
+          listAvailableIcon: androidIconNames);
     } else if (Platform.isIOS) {
       // iOS-specific code
       try {
+        final List<String> iconName = <String>['icon1', 'icon2', 'icon3'];
         if (await FlutterDynamicIcon.supportsAlternateIcons) {
           await FlutterDynamicIcon.setAlternateIconName(iconName[iconIndex]);
           debugPrint("App icon change successful");

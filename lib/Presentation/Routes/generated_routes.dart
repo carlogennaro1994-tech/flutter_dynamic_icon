@@ -8,7 +8,7 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => const MyHomePage(title: 'Ícone do aplicativo'));
+            builder: (_) => const MyHomePage(title: 'App Icon'));
       default:
         return _errorRoute();
     }

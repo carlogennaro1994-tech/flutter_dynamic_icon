@@ -12,4 +12,5 @@ AppBar buildAppBar({
       centerTitle: centerTitle ?? false,
       backgroundColor: primaryColor,
       actions: actionWidgets ?? [],
+      toolbarHeight: 67,
     );
